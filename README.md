@@ -90,36 +90,3 @@ CSV_to_KMZ/
 ## License
 
 This project is licensed under the MIT License.
-
----
-
-### Summary of Changes in the `README.md`:
-1. **Updated Project Name**: Changed to **`CSV to KMZ Converter`**.
-2. **New Features**: Detailed the use of custom icons and automatic geocoding by Google MyMaps.
-3. **Installation Instructions**: Clear instructions on how to clone the repo, install dependencies, and run the application.
-4. **CSV Format and Example**: Added detailed instructions on the required CSV columns.
-5. **Directory Structure**: Updated the file structure for clarity.
-6. **How It Works**: Explained the workflow, from CSV reading to KMZ generation and MyMaps integration.
-
----
-
-Once you've updated the `README.md` locally, follow these steps to commit the change:
-
-### Commit the Updated `README.md` to GitHub:
-
-1. **Add the file**:
-   ```bash
-   git add README.md
-   ```
-
-2. **Commit the changes**:
-   ```bash
-   git commit -m "Updated README.md with project details and renamed repository to CSV_to_KMZ"
-   ```
-
-3. **Push the changes**:
-   ```bash
-   git push origin main
-   ```
-
-Let me know if you need any further changes!
