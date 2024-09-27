@@ -1,8 +1,3 @@
-Here's an updated version of the `README.md` for your **`CSV_to_KMZ`** project that reflects the current structure, functionality, and changes made:
-
-### **README.md**:
-
-```markdown
 # CSV to KMZ Converter
 
 This Python project allows you to convert a CSV file containing postal codes, cities, and countries into a KMZ file, which can be used in Google MyMaps. The KMZ file includes placemarks with custom icons, and addresses are automatically geocoded by Google MyMaps.
