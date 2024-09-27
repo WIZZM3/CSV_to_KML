@@ -1,0 +1,30 @@
+# Ignore Python bytecode
+*.pyc
+*.pyo
+__pycache__/
+
+# Ignore virtual environment directories
+venv/
+env/
+
+# Ignore configuration files
+config/
+*.env
+*.spec
+
+# Ignore build and distribution directories
+build/
+dist/
+*.egg-info/
+
+# Ignore log files
+*.log
+
+# Ignore any OS or editor-specific files
+.DS_Store
+*.swp
+*.swo
+
+# Ignore the `ressources` directory if you do not want to include it
+# This is optional, based on whether you want to keep resources in the repo
+# ressources/

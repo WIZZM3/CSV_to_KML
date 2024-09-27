@@ -1,15 +1,15 @@
+import os
 from PyQt5.QtWidgets import QMainWindow, QPushButton, QFileDialog, QLabel, QMessageBox, QVBoxLayout, QWidget, QProgressBar
 from PyQt5.QtCore import Qt
 from PyQt5.QtGui import QIcon
 from worker import Worker
 import chardet
-import os
 
 class CSVtoKMZApp(QMainWindow):
     def __init__(self):
         super().__init__()
 
-        self.setWindowTitle("Convertisseur CSV en KMZ avec Icône Personnalisée et Progrès")
+        self.setWindowTitle("CSV to KMZ")
         self.setGeometry(300, 300, 500, 300)
 
         # Set the window icon from the 'ressources/' directory
@@ -67,9 +67,15 @@ class CSVtoKMZApp(QMainWindow):
             self.csv_label.setText("Fichier CSV : Non sélectionné")
         self.check_files_selected()
 
+    def detect_encoding(self, file_path):
+        # Detect the encoding of the file
+        with open(file_path, 'rb') as file:
+            result = chardet.detect(file.read())
+        return result['encoding']
+
     def select_png_file(self):
         # Open file dialog to select a PNG file
-        png_file, _ = QFileDialog.getOpenFileName(self, "Ouvrir fichier PNG", "", "Fichiers PNG (*.png)")
+        png_file, _ = QFileDialog.getOpenFileName(self, "Ouvrir Icône PNG", "", "Fichiers PNG (*.png)")
         if png_file:
             self.png_file_path = png_file
             self.png_label.setText(f"Icône personnalisée (PNG) : {png_file}")
@@ -84,12 +90,6 @@ class CSVtoKMZApp(QMainWindow):
             self.validate_button.setEnabled(True)
         else:
             self.validate_button.setEnabled(False)
-
-    def detect_encoding(self, file_path):
-        # Detect the encoding of the file
-        with open(file_path, 'rb') as file:
-            result = chardet.detect(file.read())
-        return result['encoding']
 
     def process_files(self):
         # Ensure both files are selected before processing

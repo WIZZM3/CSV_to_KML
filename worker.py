@@ -1,7 +1,7 @@
 import os
-import zipfile
 import pandas as pd
 from PyQt5.QtCore import QThread, pyqtSignal
+from kmz_generator import generate_kmz
 
 class Worker(QThread):
     progress_updated = pyqtSignal(int)
@@ -22,7 +22,6 @@ class Worker(QThread):
             total_rows = len(data)
 
             # Generate KML and KMZ
-            from kmz_generator import generate_kmz
             result = generate_kmz(data, self.csv_file, self.png_file)
             self.task_completed.emit(result)
 

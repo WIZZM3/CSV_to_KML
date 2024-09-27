@@ -5,7 +5,7 @@ def generate_kmz(data, csv_file, png_file):
     # Create a KML file
     kml_file_name = os.path.splitext(csv_file)[0] + ".kml"
     try:
-        with open(kml_file_name, "w") as kml_file:
+        with open(kml_file_name, "w", encoding="utf-8") as kml_file:
             kml_file.write('<?xml version="1.0" encoding="UTF-8"?>\n')
             kml_file.write('<kml xmlns="http://www.opengis.net/kml/2.2">\n')
             kml_file.write('  <Document>\n')
