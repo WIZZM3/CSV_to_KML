@@ -1,7 +1,7 @@
 import os
 import winsound  # Import winsound for sound notification
 from PyQt5.QtWidgets import (
-    QWidget, QVBoxLayout, QPushButton, QFileDialog, QLabel, QProgressBar, QLineEdit, QMessageBox
+    QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QLabel, QProgressBar, QLineEdit, QMessageBox, QCheckBox, QComboBox
 )
 from PyQt5.QtGui import QIcon  # Import QIcon for the window icon
 from PyQt5.QtCore import Qt
@@ -33,6 +33,30 @@ class MainWindow(QWidget):
         self.api_key_input = QLineEdit(self)
         self.api_key_input.setPlaceholderText("Enter your Google API key")
         self.layout.addWidget(self.api_key_input)
+
+        # Anonymity checkbox
+        self.anonymity_checkbox = QCheckBox("Enable anonymity (blur geolocation)", self)
+        self.anonymity_checkbox.stateChanged.connect(self.toggle_radius_dropdown)  # Connect checkbox to toggle function
+        self.layout.addWidget(self.anonymity_checkbox)
+
+        # Horizontal layout for the radius label and dropdown
+        radius_layout = QHBoxLayout()
+        self.radius_label = QLabel("Select blur radius (in meters):", self)
+        radius_layout.addWidget(self.radius_label)
+
+        self.radius_dropdown = QComboBox(self)
+        # Adding radius options (100m default, then +50m increments)
+        self.radius_options = [f"{i} meters" for i in range(100, 501, 50)]
+        self.radius_dropdown.addItems(self.radius_options)
+        self.radius_dropdown.setCurrentIndex(0)  # Default to 100 meters
+        self.radius_dropdown.setFixedWidth(100)  # Set fixed width for the dropdown
+        radius_layout.addWidget(self.radius_dropdown)
+
+        self.layout.addLayout(radius_layout)  # Add the horizontal layout to the main layout
+
+        # Initially disable the dropdown, will be enabled if the checkbox is checked
+        self.radius_label.setEnabled(False)
+        self.radius_dropdown.setEnabled(False)
 
         # Button to start generating KML
         self.generate_button = QPushButton("Generate KML")
@@ -66,6 +90,17 @@ class MainWindow(QWidget):
         file_path, _ = QFileDialog.getSaveFileName(self, "Save KML File", downloads_path, "KML Files (*.kml)", options=options)
         return file_path
 
+    def toggle_radius_dropdown(self, state):
+        """
+        Enable or disable the radius dropdown based on the checkbox state.
+        """
+        if state == Qt.Checked:
+            self.radius_label.setEnabled(True)
+            self.radius_dropdown.setEnabled(True)
+        else:
+            self.radius_label.setEnabled(False)
+            self.radius_dropdown.setEnabled(False)
+
     def generate_kml(self):
         # Ensure a CSV file is selected before starting
         if not self.csv_file_path:
@@ -83,12 +118,16 @@ class MainWindow(QWidget):
         if not self.output_file_path:
             QMessageBox.critical(self, "Error", "Please select a location to save the KML file.")
             return
-        
+
+        # Get the anonymity and radius values
+        anonymity_enabled = self.anonymity_checkbox.isChecked()
+        selected_radius = int(self.radius_dropdown.currentText().split()[0])  # Get the radius value in meters
+
         # Disable button and start background processing
         self.generate_button.setEnabled(False)
         
-        # Pass csv_file_path, api_key, and output_file_path to the Worker class
-        self.worker = Worker(self.csv_file_path, self.api_key, self.output_file_path)
+        # Pass csv_file_path, api_key, output_file_path, anonymity flag, and radius to the Worker class
+        self.worker = Worker(self.csv_file_path, self.api_key, self.output_file_path, anonymity_enabled, selected_radius)
         self.worker.progress_updated.connect(self.update_progress)
         self.worker.task_completed.connect(self.on_task_completed)
         self.worker.start()

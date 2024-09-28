@@ -6,6 +6,7 @@ This Python project allows you to convert a CSV file containing postal codes, ci
 - **CSV to KML Conversion**: Converts a CSV file with postal code, city, and country information into a KML file with geocoded placemarks.
 - **Google Geocoding**: Automatically geocodes the addresses (postal code, city, country) using the Google Maps Geocoding API.
 - **Progress Tracking**: The application tracks and displays the progress of geocoding and KML file generation.
+- **Anonymity Mode**: Users can now enable an anonymity feature that blurs geocoded locations within a configurable radius.
 
 ## Requirements
 

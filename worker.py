@@ -2,6 +2,8 @@ import os
 import time
 import requests
 import pandas as pd
+import random
+from math import cos, radians
 from PyQt5.QtCore import QThread, pyqtSignal
 from kml_generator import generate_kml
 
@@ -9,32 +11,59 @@ class Worker(QThread):
     progress_updated = pyqtSignal(int)
     task_completed = pyqtSignal(str)
 
-    def __init__(self, csv_file, api_key, output_file):
+    def __init__(self, csv_file, api_key, output_file, anonymity_enabled, blur_radius):
         super().__init__()
         self.csv_file = csv_file
         self.api_key = api_key
-        self.output_file = output_file  # Pass the output file path
+        self.output_file = output_file
+        self.anonymity_enabled = anonymity_enabled  # Whether to blur or not
+        self.blur_radius = blur_radius  # Blurring radius in meters
 
     def geocode_address(self, postalcode, city, country):
         """
-        Geocode a location using Google Maps Geocoding API and return latitude and longitude.
-        Constructs the address from postalcode, city, and country.
+        Geocode a location using Google Maps Geocoding API and return latitude and longitude,
+        with a random blur added to the result within the specified radius if anonymity is enabled.
         """
         url = "https://maps.googleapis.com/maps/api/geocode/json"
-        address = f"{postalcode} {city} {country}".replace(" ", "+")  # Format address properly for URL
+        address = f"{postalcode} {city} {country}".replace(" ", "+")  # Format address for URL
         params = {
-            'address': address,  # The formatted address
-            'key': self.api_key   # API key from the user
+            'address': address,
+            'key': self.api_key
         }
         response = requests.get(url, params=params)
         if response.status_code == 200:
             data = response.json()
             if data['status'] == 'OK':
                 location = data['results'][0]['geometry']['location']
-                return location['lat'], location['lng']
+                lat, lon = location['lat'], location['lng']
+                
+                if self.anonymity_enabled:
+                    # Apply blurring within the selected radius
+                    lat, lon = self.apply_blur(lat, lon, self.blur_radius)
+                
+                return lat, lon
             else:
                 print(f"Google API error: {data['status']}")
         return None, None
+
+    def apply_blur(self, lat, lon, radius):
+        """
+        Blurs the latitude and longitude within the specified radius (in meters).
+        """
+        # Convert radius from meters to degrees (approximation)
+        radius_in_degrees = radius / 111000  # 1 degree latitude ~ 111km
+
+        # Generate random angle and distance for blurring
+        angle = random.uniform(0, 360)  # Random direction in degrees
+        distance = random.uniform(0, radius_in_degrees)  # Random distance within radius
+
+        # Calculate the new latitude
+        new_lat = lat + distance * cos(radians(angle))
+
+        # Calculate the new longitude, adjusted by the latitude
+        new_lon = lon + (distance * cos(radians(angle))) / cos(radians(lat))
+
+        return new_lat, new_lon
 
     def run(self):
         try:
