@@ -1,3 +1,4 @@
 pandas
 PyQt5
 chardet
+requests

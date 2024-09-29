@@ -42,33 +42,37 @@ class Worker(QThread):
                     lat, lon = self.apply_blur(lat, lon, self.blur_radius)
                 
                 return lat, lon
-            else:
-                print(f"Google API error: {data['status']}")
         return None, None
 
     def apply_blur(self, lat, lon, radius):
         """
         Blurs the latitude and longitude within the specified radius (in meters).
         """
-        # Convert radius from meters to degrees (approximation)
         radius_in_degrees = radius / 111000  # 1 degree latitude ~ 111km
-
-        # Generate random angle and distance for blurring
-        angle = random.uniform(0, 360)  # Random direction in degrees
-        distance = random.uniform(0, radius_in_degrees)  # Random distance within radius
-
-        # Calculate the new latitude
+        angle = random.uniform(0, 360)
+        distance = random.uniform(0, radius_in_degrees)
         new_lat = lat + distance * cos(radians(angle))
-
-        # Calculate the new longitude, adjusted by the latitude
         new_lon = lon + (distance * cos(radians(angle))) / cos(radians(lat))
-
         return new_lat, new_lon
+
+    def validate_csv(self, data):
+        """
+        Validate that the CSV file has the correct columns.
+        """
+        required_columns = {'PRENOM', 'CP', 'VILLE', 'PAYS'}
+        csv_columns = set(data.columns)
+        missing_columns = required_columns - csv_columns
+        if missing_columns:
+            raise ValueError(f"Missing columns: {', '.join(missing_columns)}")
 
     def run(self):
         try:
             # Load the CSV file
             data = pd.read_csv(self.csv_file)
+
+            # Check if the CSV has the correct format (columns)
+            self.validate_csv(data)
+
             total_rows = len(data)
 
             # Add latitude and longitude columns
@@ -85,8 +89,6 @@ class Worker(QThread):
                 if lat is not None and lng is not None:
                     data.at[index, 'LATITUDE'] = lat
                     data.at[index, 'LONGITUDE'] = lng
-                else:
-                    print(f"Failed to geocode location: {postalcode}, {city}, {country}")
 
                 # Update progress
                 self.progress_updated.emit(int((index + 1) / total_rows * 100))
@@ -101,5 +103,9 @@ class Worker(QThread):
             else:
                 self.task_completed.emit("Error: Could not generate KML")
 
+        except ValueError as ve:
+            # CSV formatting error, send the error to the main thread
+            self.task_completed.emit(f"Error: {str(ve)}")
         except Exception as e:
+            # Handle general exceptions silently and send error to main thread
             self.task_completed.emit(f"Error: {str(e)}")

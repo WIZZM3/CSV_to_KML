@@ -36,44 +36,51 @@ This script will automatically install the required packages using `apt`.
 
 Additionally, you will need a **Google API key** to use the Google Maps Geocoding API. You can obtain one from [Google API Key Documentation](https://developers.google.com/maps/documentation/geocoding/get-api-key?hl=fr).
 
+### Linux Binary and `.deb` Package
+
+In addition to the source code, a pre-built Linux binary is available, as well as a `.deb` package for Debian-based systems (e.g., Ubuntu).
+
+- **Linux Binary**: A standalone binary that doesn't require Python or the dependencies mentioned above, as everything is bundled inside. You can download and use it directly on your system.
+
+- **`.deb` Package**: A Debian package is also available for installation. This package installs the `csv-to-kml` binary on your system, making it easy to run from the command line.
+
+### Installing the `.deb` Package
+
+If you have the `.deb` package, you can install it with the following command:
+
+```bash
+sudo dpkg -i csv-to-kml.deb
+```
+
+This will install the `csv-to-kml` binary to `/usr/local/bin/`, allowing you to run the application from anywhere.
+
 ## How to Use
 
-1. **Clone the Repository**:
+1. **Run the Application**:
+   - If you're using the `.deb` package, simply run:
+
    ```bash
-   git clone https://github.com/yourusername/CSV_to_KML.git
-   cd CSV_to_KML
+   csv-to-kml
    ```
 
-2. **Install the Requirements**:
-   Make sure you have Python and pip installed. Then run:
+   - If you're using the pre-built Linux binary, run the binary from the command line:
+
    ```bash
-   pip install -r requirements.txt
+   ./csv-to-kml
    ```
 
-3. **Install System Dependencies (Linux only)**:
-   If you are on a Linux system, install additional system dependencies by running:
-   ```bash
-   ./install_linux_deps.sh
-   ```
-
-4. **Run the Application**:
-   You can run the GUI application using the following command:
-   ```bash
-   python main.py
-   ```
-
-5. **Provide CSV File and API Key**:
+2. **Provide CSV File and API Key**:
    - Use the GUI to select a CSV file containing the columns: `PRENOM`, `CP` (Postal Code), `VILLE` (City), and `PAYS` (Country).
    - Enter your **Google Maps API key** for geocoding.
    - Click on the **Generate KML** button to generate the KML file.
 
-6. **Output KML File**:
+3. **Output KML File**:
    The KML file will be saved in the location you choose, and it will include placemarks geocoded from the provided postal code, city, and country.
 
-7. **Visualize on Google MyMaps**:
+4. **Visualize on Google MyMaps**:
    Once the KML file is generated, you can upload it to [Google MyMaps](https://www.google.com/mymaps) to visualize the placemarks.
 
-## CSV File Format
+### CSV File Format
 
 The CSV file should have the following columns:
 
@@ -101,7 +108,6 @@ CSV_to_KML/
 ├── kml_generator.py       # KML generation logic
 ├── ressources/            # Directory for resources (images, etc.)
 │   └── icon.png           # The icon used in the GUI
-├── install_linux_deps.sh   # Script to install Linux system dependencies
 └── requirements.txt       # Python dependencies list
 ```
 

@@ -1,5 +1,5 @@
 import os
-import winsound  # Import winsound for sound notification
+import sys
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QHBoxLayout, QPushButton, QFileDialog, QLabel, QProgressBar, QLineEdit, QMessageBox, QCheckBox, QComboBox
 )
@@ -125,23 +125,34 @@ class MainWindow(QWidget):
 
         # Disable button and start background processing
         self.generate_button.setEnabled(False)
-        
-        # Pass csv_file_path, api_key, output_file_path, anonymity flag, and radius to the Worker class
-        self.worker = Worker(self.csv_file_path, self.api_key, self.output_file_path, anonymity_enabled, selected_radius)
-        self.worker.progress_updated.connect(self.update_progress)
-        self.worker.task_completed.connect(self.on_task_completed)
-        self.worker.start()
+
+        try:
+            # Pass csv_file_path, api_key, output_file_path, anonymity flag, and radius to the Worker class
+            self.worker = Worker(self.csv_file_path, self.api_key, self.output_file_path, anonymity_enabled, selected_radius)
+            self.worker.progress_updated.connect(self.update_progress)
+            self.worker.task_completed.connect(self.on_task_completed)
+            self.worker.start()
+        except Exception as e:
+            QMessageBox.critical(self, "Error", f"An error occurred during file generation: {str(e)}")
+            self.generate_button.setEnabled(True)
 
     def update_progress(self, progress_value):
         self.progress.setValue(progress_value)
 
     def on_task_completed(self, result):
         if "Error" in result:
-            print(f"Error: {result}")
-        else:
-            print(f"KML file created: {result}")
+            QMessageBox.critical(self, "Error", result)  # Show error message in a pop-up
         self.progress.setValue(0)
         self.generate_button.setEnabled(True)
-        
+
         # Play a sound when the task is complete
-        winsound.Beep(1000, 500)  # Frequency in Hz, duration in milliseconds
+        self.play_sound_on_completion()
+
+    def play_sound_on_completion(self):
+        # Check platform and play sound accordingly
+        if sys.platform == "win32":
+            import winsound
+            winsound.Beep(1000, 500)  # Frequency in Hz, duration in milliseconds (for Windows)
+        elif sys.platform == "linux":
+            # Use os.system('play -nq -t alsa synth 0.3 sine 440') for sound in Linux systems
+            os.system('play -nq -t alsa synth 0.3 sine 440')  # Requires 'sox' package for sound on Linux
