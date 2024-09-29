@@ -6,7 +6,7 @@ This Python project allows you to convert a CSV file containing postal codes, ci
 - **CSV to KML Conversion**: Converts a CSV file with postal code, city, and country information into a KML file with geocoded placemarks.
 - **Google Geocoding**: Automatically geocodes the addresses (postal code, city, country) using the Google Maps Geocoding API.
 - **Progress Tracking**: The application tracks and displays the progress of geocoding and KML file generation.
-- **Anonymity Mode**: Users can now enable an anonymity feature that blurs geocoded locations within a configurable radius.
+- **Anonymity Mode**: Users can enable an anonymity feature that blurs geocoded locations within a configurable radius.
 
 ## Requirements
 
@@ -16,13 +16,25 @@ The following Python libraries are required for this project:
 pip install -r requirements.txt
 ```
 
-Dependencies:
-
+### Python Dependencies:
 - `pandas`
 - `PyQt5`
 - `requests`
+- `chardet`
 
-Additionally, you will need a **Google API key** to use the Google Maps Geocoding API. You can obtain one from [Google Cloud Console](https://console.cloud.google.com/).
+### Additional System Requirements (Linux):
+
+If you are running this project on Linux, you need to ensure that the required system dependencies are installed. These dependencies include OpenGL support and other essential libraries for the application to function correctly.
+
+To install the necessary packages, run the following script:
+
+```bash
+./install_linux_deps.sh
+```
+
+This script will automatically install the required packages using `apt`.
+
+Additionally, you will need a **Google API key** to use the Google Maps Geocoding API. You can obtain one from [Google API Key Documentation](https://developers.google.com/maps/documentation/geocoding/get-api-key?hl=fr).
 
 ## How to Use
 
@@ -38,21 +50,27 @@ Additionally, you will need a **Google API key** to use the Google Maps Geocodin
    pip install -r requirements.txt
    ```
 
-3. **Run the Application**:
+3. **Install System Dependencies (Linux only)**:
+   If you are on a Linux system, install additional system dependencies by running:
+   ```bash
+   ./install_linux_deps.sh
+   ```
+
+4. **Run the Application**:
    You can run the GUI application using the following command:
    ```bash
    python main.py
    ```
 
-4. **Provide CSV File and API Key**:
+5. **Provide CSV File and API Key**:
    - Use the GUI to select a CSV file containing the columns: `PRENOM`, `CP` (Postal Code), `VILLE` (City), and `PAYS` (Country).
    - Enter your **Google Maps API key** for geocoding.
    - Click on the **Generate KML** button to generate the KML file.
 
-5. **Output KML File**:
+6. **Output KML File**:
    The KML file will be saved in the location you choose, and it will include placemarks geocoded from the provided postal code, city, and country.
 
-6. **Visualize on Google MyMaps**:
+7. **Visualize on Google MyMaps**:
    Once the KML file is generated, you can upload it to [Google MyMaps](https://www.google.com/mymaps) to visualize the placemarks.
 
 ## CSV File Format
@@ -83,7 +101,8 @@ CSV_to_KML/
 ├── kml_generator.py       # KML generation logic
 ├── ressources/            # Directory for resources (images, etc.)
 │   └── icon.png           # The icon used in the GUI
-└── requirements.txt       # Dependencies list
+├── install_linux_deps.sh   # Script to install Linux system dependencies
+└── requirements.txt       # Python dependencies list
 ```
 
 ## How It Works
